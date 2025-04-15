@@ -1,26 +1,12 @@
-import React from 'react'
-import Program from './Program';
+import React, { useContext } from 'react'
 import { MdDescription } from 'react-icons/md';
+import { ProgramContext } from '../Store/Program_Store';
+import ProgramCard from './ProgramCard';
 
 const Main = () => {
   const [id ,setId] = React.useState(1);
 
-    // Categories and their respective descriptions
-    const categories = [
-      { id: 1, name: "MC", description: "Microcontroller Lab Programs" },
-      { id: 2, name: "Latex", description: "Latex Lab Programs" },
-      { id: 3, name: "Ada", description: "Algorithm Design & Analysis Programs" },
-    ];
-    
-  // Programs for each category
-    const programs = [
-      // { id: 1, name: "MC", title: "Blinking LED", description: "A simple program to blink an LED using a microcontroller." },
-      // { id: 2, name: "MC", title: "PWM Control", description: "A program to control the brightness of an LED using PWM." },
-      // { id: 3, name: "Latex", title: "Document Formatting", description: "Learn how to format documents using LaTeX." },
-      // { id: 4, name: "Latex", title: "Math Equations", description: "Using LaTeX for writing mathematical equations." },
-      // { id: 5, name: "Ada", title: "Dijkstra's Algorithm", description: "Implementing Dijkstra’s shortest path algorithm." },
-      // { id: 6, name: "Ada", title: "Knapsack Problem", description: "Solving the knapsack problem using dynamic programming." },
-    ];
+    const { programs , categories } = useContext(ProgramContext) ;
 
     const selectedCategory = categories.find((cat) => cat.id === id);
     const filteredPrograms = programs.filter((program) => program.name === selectedCategory?.name);
@@ -46,19 +32,7 @@ const Main = () => {
         <p className='mb-4'>Explore {selectedCategory?.name} lab programs with full Code.</p>
 
           {/** text and controls  */}
-          <div className='flex flex-col gap-4 '>
-          {/* <Program category={selectedCategory?.name} /> */}
-          {filteredPrograms.length > 0 ? (
-            filteredPrograms.map((program)=>{
-              return (
-                <Program key={program.title} category={program.id} title={program.title} description={program.description} />
-              )
-            })
-          )
-        :(
-          <p className="text-red-500 text-center">No programs available.</p>
-          )}
-          </div>
+          <ProgramCard filteredPrograms={filteredPrograms} />
         </div>
       </div>
   )
