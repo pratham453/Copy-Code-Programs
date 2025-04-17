@@ -1,14 +1,33 @@
-import React, { useState } from 'react';
-import { CiEdit } from "react-icons/ci";
-import { RiDeleteBin5Line } from "react-icons/ri";
-import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
-import { LuCopy } from "react-icons/lu";
-import { SlCalender } from "react-icons/sl";
+import React, { useContext, useState } from 'react';
 
-const Program = ({ title, description }) => {
+import { SlCalender } from "react-icons/sl";
+import { ProgramContext } from '../Store/Program_Store';
+import Controls from "./Controls/Controls"
+
+const Program = ({ id, title, description, code }) => {
+  const { popup, setPopup, setOperation, setEditId , editId } = useContext(ProgramContext);
   const [open, setOpen] = useState(false);
 
-  const handleView = () => setOpen(prev => !prev);
+  const onHandleButton = (index) => {
+    setEditId(id)
+    if(index === 0 ) {
+      setPopup(!popup);
+      setOperation("edit")
+    }
+    else if(index === 1) setOperation("delete")
+    else if(index === 2){
+      setPopup(!popup);
+      setOperation("view")
+    } 
+    else if(index === 3){
+      navigator.clipboard.writeText(`${code}`);
+    }
+    console.log(editId)
+  }
+
+  const toggleDescription = () => {
+    setOpen(!open);
+  };
 
   const date = new Date();
   const formattedDate = date.toLocaleDateString("en-US", {
@@ -25,27 +44,16 @@ const Program = ({ title, description }) => {
 
         {/* Controls */}
         <div className="flex gap-2 sm:gap-4 mt-2 sm:mt-0">
-          <button className="text-[16px] p-2 border border-[#000a30] hover:bg-gray-200 transition">
-            <CiEdit />
-          </button>
-          <button className="text-[16px] p-2 border border-[#000a30] hover:bg-red-200 transition">
-            <RiDeleteBin5Line />
-          </button>
-          <button
-            className="text-[16px] p-2 border border-[#000a30] hover:bg-blue-200 transition"
-            onClick={handleView}
-          >
-            {open ? <FaRegEyeSlash /> : <FaRegEye />}
-          </button>
-          <button className="text-[16px] p-2 border border-[#000a30] hover:bg-green-200 transition">
-            <LuCopy />
-          </button>
+          <Controls onHandleButton={onHandleButton}/>
         </div>
       </div>
 
       {/* Description Section */}
       <div className='p-2'>
-        <p className={`transition-all ${open ? 'max-h-full' : 'max-h-[50px] overflow-hidden'}`}>
+        <p
+          className={`transition-all cursor-pointer ${open ? 'max-h-full' : 'max-h-[50px] overflow-hidden'}`}
+          onClick={toggleDescription}
+        >
           {description}
         </p>
 

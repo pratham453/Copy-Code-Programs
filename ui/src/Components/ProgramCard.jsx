@@ -8,6 +8,7 @@ export default function ProgramCard({ filteredPrograms }) {
           return (
             <Program
               key={program.title}
+              id = {program.id}
               category={program.id}
               title={program.title}
               description={program.description}
