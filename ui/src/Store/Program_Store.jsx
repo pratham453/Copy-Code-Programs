@@ -7,6 +7,8 @@ export const ProgramProvider = ({ children }) => {
   const [operation , setOperation] = useState(""); // State to manage the operation (add/edit)
   const [editId , setEditId] = useState(null); // State to manage the ID of the program being edited
 
+  const [login , setLogin] = useState(false); // State to manage login status
+
   const [programs, setPrograms] = useState([
     {
       id: 1,
@@ -70,7 +72,9 @@ export const ProgramProvider = ({ children }) => {
         setOperation,
         operation ,
         editId , 
-        setEditId
+        setEditId,
+        login,
+        setLogin,
       }}
     >
       {children}

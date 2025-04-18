@@ -1,12 +1,17 @@
-import Balls from "./Design/Balls";
+import { useContext, useState } from "react";
+import Balls from "./Balls";
 import { LuCopy } from "react-icons/lu";
+import { ProgramContext } from "../Store/StoreContext";
 
-export default function Card({  programCode  , handleCode}) {
+export default function Card({ programCode, handleCode }) {
+  const { operation } = useContext(ProgramContext);
+  const [localCode, setLocalCode] = useState(programCode || "");
 
   const handleCodeChange = (e) => {
-    const code = e.target.value;
-    handleCode(code); // Call the handleCode function passed as a prop
+    setLocalCode(e.target.value);
+    handleCode(localCode);
   };
+
   return (
     <div className="w-full h-[90%] mt-3 border-1 shadow-md rounded-md">
       <div className="w-full bg-green-200 flex items-center justify-between px-4 py-2 border-b rounded-t-md">
@@ -21,8 +26,9 @@ export default function Card({  programCode  , handleCode}) {
           placeholder="Write your Program here..."
           rows={15} // Adjusted default rows for better initial view
           className="w-full h-full p-3 text-white font-mono text-sm focus:outline-none resize-none overflow-auto" // Improved styling
-          value={programCode}
-          onChange={handleCodeChange}// Handle text changes // Set default value to programCode prop
+          value={localCode} // Use localCode here to control the textarea value
+          onChange={handleCodeChange} // Handle text changes // Set default value to programCode prop
+          readOnly={operation === "view"}
         ></textarea>
       </div>
     </div>

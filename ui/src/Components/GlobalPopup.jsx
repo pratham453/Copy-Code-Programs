@@ -3,7 +3,7 @@ import { ProgramContext } from "../Store/Program_Store";
 import Input from "./Input"; // Import Input here
 
 export default function GlobalPopup() {
-  const { popup, editId, programs } = useContext(ProgramContext);
+  const { popup, setPopup, editId, programs } = useContext(ProgramContext);
 
   useEffect(() => {
     if (popup) {
@@ -28,9 +28,10 @@ export default function GlobalPopup() {
 
   content = (
     <Input
-      programCode={currentProgram.code}
-      programTitle={currentProgram.title}
-      programDescription={currentProgram.description}
+      programCode={currentProgram?.code}
+      programTitle={currentProgram?.title}
+      programDescription={currentProgram?.description}
+      onClose={() => setPopup(false)} // Pass the onClose prop
     />
   );
 
