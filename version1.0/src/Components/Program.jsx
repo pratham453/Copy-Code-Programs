@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { SlCalender } from "react-icons/sl";
 import Controls from "./Controls";
 
-const Program = ({ id, title, description, code }) => {
+const Program = ({ id, title, description, code ,category}) => {
   const [open, setOpen] = useState(false);
 
   const toggleDescription = () => {
@@ -21,7 +21,7 @@ const Program = ({ id, title, description, code }) => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full p-2">
         <h3 className="text-2xl font-semibold ">{title}</h3>
         <div className="flex gap-2 sm:gap-4 mt-2 sm:mt-0">
-          <Controls code={code} programId={id} />
+          <Controls code={code} programId={id} category={category}/>
         </div>
       </div>
       <div className="p-2">

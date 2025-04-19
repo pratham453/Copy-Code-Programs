@@ -2,9 +2,10 @@ import React, { useContext } from "react";
 import { ProgramContext } from "../Store/StoreContext";
 import LoginCard from "../Sections/LoginCard";
 const Header = () => {
-  const { login , setPopupContent } = useContext(ProgramContext)
+  const { login , setPopupContent ,setLogin} = useContext(ProgramContext)
   const handleClick = ()=>{
-    setPopupContent(<LoginCard/>)
+    if(!login) setPopupContent(<LoginCard/>)
+    else if(login) setLogin(false)
   }
   return (
     <>

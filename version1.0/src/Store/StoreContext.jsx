@@ -19,7 +19,12 @@ export const ProgramContext = createContext({
 
 const initialStoreItems = [
   { typeId: 1, title: "MC Program 1", program: "MC Program Code 1", id: "1" },
-  { typeId: 2, title: "Latex Program 2", program: "Latex Program Code 1", id: "5" },
+  {
+    typeId: 2,
+    title: "Latex Program 2",
+    program: "Latex Program Code 1",
+    id: "5",
+  },
 ];
 
 const storeReducer = (storeItem, action) => {
@@ -27,14 +32,23 @@ const storeReducer = (storeItem, action) => {
   if (action.type === "ADD") {
     newStoreItems = [
       ...storeItem,
-      { typeId: action.payload.typeId, title: action.payload.title, program: action.payload.program, id: Math.random().toString() },
+      {
+        typeId: action.payload.typeId,
+        title: action.payload.title,
+        program: action.payload.program,
+        id: Math.random().toString(),
+      },
     ];
   } else if (action.type === "DELETE") {
     newStoreItems = storeItem.filter((item) => item.id !== action.payload.id);
   } else if (action.type === "UPDATE") {
-    newStoreItems = storeItem.map((item) =>
-      item.id === action.payload.id ? action.payload : item
-    );
+    newStoreItems = storeItem.map((item) => {
+      if (item.id === action.payload.id) {
+        return action.payload;
+      } else {
+        return item;
+      }
+    });
   }
   return newStoreItems;
 };
@@ -54,7 +68,10 @@ const StoreContext = ({ children }) => {
   const [storeItems, dispatch] = useReducer(storeReducer, initialStoreItems);
 
   const addStoreItem = (categoryId, itemTitle, itemProgram) => {
-    dispatch({ type: "ADD", payload: { typeId: categoryId, title: itemTitle, program: itemProgram } });
+    dispatch({
+      type: "ADD",
+      payload: { typeId: categoryId, title: itemTitle, program: itemProgram },
+    });
   };
 
   const deleteStoreItem = (programId) => {

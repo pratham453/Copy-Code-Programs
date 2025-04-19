@@ -6,24 +6,37 @@ import { useContext } from "react";
 import { ProgramContext } from "../Store/StoreContext";
 import Input from "./Input";
 
-export default function Controls({ code, programId }) {
-  const { setSelectedId, setOperation, deleteStoreItem, setPopupContent, storeItems } = useContext(ProgramContext);
+export default function Controls({ code, programId ,category }) {
+  const {
+    setSelectedId,
+    setOperation,
+    deleteStoreItem,
+    setPopupContent,
+    storeItems,
+    login,
+    setAddCategoryId,
+  } = useContext(ProgramContext);
   const currentProgram = storeItems.find((item) => item.id === programId);
 
   const onHandleButton = (index) => {
     setSelectedId(programId);
     if (index === 0) {
-      setOperation("edit");
-      setPopupContent(
-        <Input
-          programTitle={currentProgram?.title}
-          programCode={currentProgram?.program}
-          onClose={() => setPopupContent(null)}
-        />
-      );
+      if (login) {
+        setOperation("edit");
+        setAddCategoryId(category);
+        setPopupContent(
+          <Input
+            programTitle={currentProgram?.title}
+            programCode={currentProgram?.program}
+            onClose={() => setPopupContent(null)}
+          />
+        );
+      }
     } else if (index === 1) {
-      setOperation("delete");
-      deleteStoreItem(programId);
+      if (login) {
+        setOperation("delete");
+        deleteStoreItem(programId);
+      }
     } else if (index === 2) {
       setOperation("view");
       setPopupContent(
@@ -52,6 +65,8 @@ export default function Controls({ code, programId }) {
           <Icon />
         </button>
       ))}
+
+      {}
     </>
   );
 }

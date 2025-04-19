@@ -22,7 +22,7 @@ export default function Input({ programTitle, programCode, onClose }) {
   };
 
   const handleEdit = () => {
-    updateStoreItem({ id: selectedId, title: localTitle, program: localCode });
+    updateStoreItem({ id: selectedId, title: localTitle, program: localCode , typeId:addCategoryId });
     onClose(null);
   };
 

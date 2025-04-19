@@ -12,6 +12,7 @@ export default function Main() {
     setOperation,
     setAddCategoryId,
     setPopupContent,
+    login
   } = useContext(ProgramContext);
 
   const selectedCategory = categories.find((cat) => cat.id === id);
@@ -38,8 +39,8 @@ export default function Main() {
   }, [storeItems]);
 
   return (
-    <div className="bg-yellow-100 w-full h-full p-2 flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold mb-8">Lab Programs</h1>
+    <div className="main bg-yellow-100  w-full p-2 flex flex-col items-center">
+      <h1 className="text-4xl font-bold my-8 ">Lab Programs</h1>
       <div className="w-[90%] bg-gray-800 grid gap-x-2 grid-cols-3 p-2 rounded-full">
         {categories.map((cat) => (
           <div
@@ -55,7 +56,7 @@ export default function Main() {
       </div>
       <div className="w-[90%] border-1 border-black rounded p-4 mt-4">
         <div>
-          {addSection}
+          {login && addSection}
           <h3 className="text-[20px]">{selectedCategory?.name}</h3>
           <p className="mb-4">
             Explore {selectedCategory?.description} lab programs with full Code.

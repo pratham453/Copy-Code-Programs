@@ -8,8 +8,9 @@ export default function Card({ programCode, handleCode }) {
   const [localCode, setLocalCode] = useState(programCode || "");
 
   const handleCodeChange = (e) => {
-    setLocalCode(e.target.value);
-    handleCode(localCode);
+    const newValue = e.target.value;
+    setLocalCode(newValue);
+    handleCode(newValue);
   };
 
   return (
