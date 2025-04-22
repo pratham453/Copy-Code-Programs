@@ -17,7 +17,7 @@ const Program = ({ id, title, description, code ,category}) => {
   });
 
   return (
-    <div className="flex flex-col gap-2 border rounded p-2">
+    <div className="flex flex-col  gap-2 border rounded p-2">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full p-2">
         <h3 className="text-2xl font-semibold ">{title}</h3>
         <div className="flex gap-2 sm:gap-4 mt-2 sm:mt-0">

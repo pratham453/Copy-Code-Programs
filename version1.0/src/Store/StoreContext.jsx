@@ -1,4 +1,4 @@
-import { createContext, useState, useReducer } from "react";
+import { createContext, useState, useReducer, useEffect } from "react";
 
 export const ProgramContext = createContext({
   addStoreItem: () => {},
@@ -59,13 +59,25 @@ const StoreContext = ({ children }) => {
   const [operation, setOperation] = useState("");
   const [selectedId, setSelectedId] = useState(null);
   const [addCategoryId, setAddCategoryId] = useState(null);
+
+  const [storeItems, dispatch] = useReducer(storeReducer, initialStoreItems);
+
   const categories = [
     { id: 1, name: "MC", description: "Microcontroller Lab Programs" },
     { id: 2, name: "Latex", description: "Latex Lab Programs" },
     { id: 3, name: "Ada", description: "Algorithm Design & Analysis Programs" },
   ];
 
-  const [storeItems, dispatch] = useReducer(storeReducer, initialStoreItems);
+  // 🔁 Load login state from localStorage on mount
+  useEffect(() => {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setLogin(loggedIn);
+  }, []);
+
+  // 💾 Save login state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("isLoggedIn", login);
+  }, [login]);
 
   const addStoreItem = (categoryId, itemTitle, itemProgram) => {
     dispatch({
