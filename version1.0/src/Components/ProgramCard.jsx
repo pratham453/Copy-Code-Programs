@@ -10,9 +10,10 @@ export default function ProgramCard({ filteredPrograms }) {
             key={program.id}
             id={program.id}
             title={program.title}
-            description={program.program} // Assuming 'program' is the description
+            description={program.desc} // Assuming 'program' is the description
             code={program.program}
-            category={program.typeId} // Assuming 'program' is also the code
+            category={program.typeId}
+            lastUpdated={program.lastUpdated} // Pass lastUpdated as a prop
           />
         ))
       ) : (

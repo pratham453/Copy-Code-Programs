@@ -1,4 +1,4 @@
-import { createContext, useState, useReducer, useEffect } from "react";
+import React, { createContext, useState, useReducer, useEffect } from "react";
 
 export const ProgramContext = createContext({
   addStoreItem: () => {},
@@ -18,12 +18,21 @@ export const ProgramContext = createContext({
 });
 
 const initialStoreItems = [
-  { typeId: 1, title: "MC Program 1", program: "MC Program Code 1", id: "1" },
+  {
+    typeId: 1,
+    title: "MC Program 1",
+    desc : "Microcontroller Program 1",
+    program: "MC Program Code 1",
+    id: "1",
+    lastUpdated: "2025-04-12T20:43:00.000Z", // Assuming 3 weeks ago was April 11th, 2025 at the current time
+  },
   {
     typeId: 2,
     title: "Latex Program 2",
-    program: "Latex Program Code 1",
+    desc : "Latex Program 2",
+    program: "Latex Program Code 2",
     id: "5",
+    lastUpdated: "2025-04-11T20:43:00.000Z", // Assuming the same date for the second item
   },
 ];
 
@@ -35,8 +44,10 @@ const storeReducer = (storeItem, action) => {
       {
         typeId: action.payload.typeId,
         title: action.payload.title,
+        desc: action.payload.desc,
         program: action.payload.program,
         id: Math.random().toString(),
+        lastUpdated: new Date().toISOString(), // last date when program is being updated
       },
     ];
   } else if (action.type === "DELETE") {
@@ -44,7 +55,10 @@ const storeReducer = (storeItem, action) => {
   } else if (action.type === "UPDATE") {
     newStoreItems = storeItem.map((item) => {
       if (item.id === action.payload.id) {
-        return action.payload;
+        return {
+          ...action.payload,
+          lastUpdated: new Date().toISOString(), // last date when program is being updated
+        };
       } else {
         return item;
       }
@@ -79,10 +93,10 @@ const StoreContext = ({ children }) => {
     localStorage.setItem("isLoggedIn", login);
   }, [login]);
 
-  const addStoreItem = (categoryId, itemTitle, itemProgram) => {
+  const addStoreItem = (categoryId, itemTitle, itemProgram , itemDesc) => {
     dispatch({
       type: "ADD",
-      payload: { typeId: categoryId, title: itemTitle, program: itemProgram },
+      payload: { typeId: categoryId, title: itemTitle, program: itemProgram , desc : itemDesc},
     });
   };
 

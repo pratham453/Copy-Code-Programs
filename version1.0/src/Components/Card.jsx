@@ -15,10 +15,12 @@ export default function Card({ programCode, handleCode }) {
 
   return (
     <div className="w-full h-[90%] mt-3 border-1 shadow-md rounded-md">
+      
       <div className="w-full bg-green-200 flex items-center justify-between px-4 py-2 border-b rounded-t-md">
         <Balls /> {/* Color Balls */}
       </div>
       {/* Text Area */}
+
       <div className="w-full h-[calc(100% - 50px)] ">
         {/* Adjusted height calculation */}
         <textarea

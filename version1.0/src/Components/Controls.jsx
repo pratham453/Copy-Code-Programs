@@ -29,6 +29,7 @@ export default function Controls({ code, programId ,category }) {
             programTitle={currentProgram?.title}
             programCode={currentProgram?.program}
             onClose={() => setPopupContent(null)}
+            programDesc={currentProgram?.desc}
           />
         );
       }
@@ -45,6 +46,7 @@ export default function Controls({ code, programId ,category }) {
           programCode={currentProgram?.program}
           onClose={() => setPopupContent(null)}
           readOnly={true}
+          programDesc={currentProgram?.desc}
         />
       );
     } else if (index === 3) {
