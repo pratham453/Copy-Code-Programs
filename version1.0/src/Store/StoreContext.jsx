@@ -1,6 +1,7 @@
 import React, { createContext, useState, useReducer, useEffect } from "react";
 
-import { db } from "../config/firebase";
+import { db, auth } from "../config/firebase"; // Import auth
+import { onAuthStateChanged } from "firebase/auth"; // Import onAuthStateChanged
 import {
   addDoc,
   collection,
@@ -79,14 +80,17 @@ const StoreContext = ({ children }) => {
 
   // 🔁 Load login state from localStorage on mount
   useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-    setLogin(loggedIn);
-  }, []);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setLogin(true);
+        // Optionally handle user information
+      } else {
+        setLogin(false);
+      }
+    });
 
-  // 💾 Save login state to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem("isLoggedIn", login);
-  }, [login]);
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const getItems = async () => {
