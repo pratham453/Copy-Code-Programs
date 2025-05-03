@@ -1,5 +1,15 @@
 import React, { createContext, useState, useReducer, useEffect } from "react";
 
+import { db } from "../config/firebase";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
+
 export const ProgramContext = createContext({
   addStoreItem: () => {},
   deleteStoreItem: () => {},
@@ -17,28 +27,13 @@ export const ProgramContext = createContext({
   setAddCategoryId: () => {},
 });
 
-const initialStoreItems = [
-  {
-    typeId: 1,
-    title: "MC Program 1",
-    desc : "Microcontroller Program 1",
-    program: "MC Program Code 1",
-    id: "1",
-    lastUpdated: "2025-04-12T20:43:00.000Z", // Assuming 3 weeks ago was April 11th, 2025 at the current time
-  },
-  {
-    typeId: 2,
-    title: "Latex Program 2",
-    desc : "Latex Program 2",
-    program: "Latex Program Code 2",
-    id: "5",
-    lastUpdated: "2025-04-11T20:43:00.000Z", // Assuming the same date for the second item
-  },
-];
+const initialStoreItems = []; // Initialize as an empty array
 
 const storeReducer = (storeItem, action) => {
   let newStoreItems = storeItem;
-  if (action.type === "ADD") {
+  if (action.type === "INITIAL_LOAD") {
+    return action.payload; // Replace the entire store with the fetched items
+  } else if (action.type === "ADD") {
     newStoreItems = [
       ...storeItem,
       {
@@ -47,7 +42,7 @@ const storeReducer = (storeItem, action) => {
         desc: action.payload.desc,
         program: action.payload.program,
         id: Math.random().toString(),
-        lastUpdated: new Date().toISOString(), // last date when program is being updated
+        lastUpdated: new Date().toISOString(),
       },
     ];
   } else if (action.type === "DELETE") {
@@ -57,7 +52,7 @@ const storeReducer = (storeItem, action) => {
       if (item.id === action.payload.id) {
         return {
           ...action.payload,
-          lastUpdated: new Date().toISOString(), // last date when program is being updated
+          lastUpdated: new Date().toISOString(),
         };
       } else {
         return item;
@@ -93,19 +88,92 @@ const StoreContext = ({ children }) => {
     localStorage.setItem("isLoggedIn", login);
   }, [login]);
 
-  const addStoreItem = (categoryId, itemTitle, itemProgram , itemDesc) => {
-    dispatch({
-      type: "ADD",
-      payload: { typeId: categoryId, title: itemTitle, program: itemProgram , desc : itemDesc},
-    });
+  useEffect(() => {
+    const getItems = async () => {
+      try {
+        const itemsCollectionRef = collection(db, "ItemStore");
+        const itemsSnapshot = await getDocs(itemsCollectionRef);
+        const itemsList = itemsSnapshot.docs.map((doc) => {
+          return {
+            id: doc.id, // Get the document ID
+            ...doc.data(),
+          }; // Get the rest of the data}
+        });
+        dispatch({ type: "INITIAL_LOAD", payload: itemsList }); // Dispatch an action to load initial data
+      } catch (error) {
+        console.log(error, "Error fetching items");
+      }
+    };
+
+    getItems();
+  }, []); // Empty dependency array means this runs only once on mount
+
+  const addStoreItem = async (categoryId, itemTitle, itemProgram, itemDesc) => {
+    try {
+      const itemsCollectionRef = collection(db, "ItemStore");
+      await addDoc(itemsCollectionRef, {
+        typeId: categoryId,
+        title: itemTitle,
+        program: itemProgram,
+        desc: itemDesc,
+        lastUpdated: new Date().toISOString(), // Set the last updated time to now
+      });
+      dispatch({
+        type: "ADD",
+        payload: {
+          typeId: categoryId,
+          title: itemTitle,
+          program: itemProgram,
+          desc: itemDesc,
+          id: Math.random().toString(), // Generate a random ID for the new item
+          lastUpdated: new Date().toISOString(), // Set the last updated time to now
+        },
+      });
+    } catch (error) {
+      console.log(error, "Error adding item");
+    }
   };
 
-  const deleteStoreItem = (programId) => {
-    dispatch({ type: "DELETE", payload: { id: programId } });
+  const deleteStoreItem = async (programId) => {
+    try {
+      await deleteDoc(doc(db, "ItemStore", programId));
+
+      dispatch({ type: "DELETE", payload: { id: programId } });
+    } catch (error) {
+      console.log(error, "Error deleting item");
+    }
   };
 
-  const updateStoreItem = (updatedItem) => {
-    dispatch({ type: "UPDATE", payload: updatedItem });
+  const updateStoreItem = async (updatedItem) => {
+    console.log(
+      "Attempting to update item with ID:",
+      updatedItem.id,
+      "Data:",
+      updatedItem
+    );
+    try {
+      const itemRef = doc(db, "ItemStore", updatedItem.id);
+      const updatedData = {
+        typeId: updatedItem.typeId,
+        title: updatedItem.title,
+        program: updatedItem.program,
+        desc: updatedItem.desc,
+        lastUpdated: new Date().toISOString(),
+      };
+      console.log("Updating Firebase with:", updatedData);
+      await updateDoc(itemRef, updatedData);
+      console.log("Firebase update successful");
+      dispatch({
+        type: "UPDATE",
+        payload: { ...updatedItem, lastUpdated: updatedData.lastUpdated },
+      });
+      console.log("Dispatched UPDATE action:", {
+        ...updatedItem,
+        lastUpdated: updatedData.lastUpdated,
+      });
+    } catch (error) {
+      console.log("Error updating item:", error);
+    }
   };
 
   return (
