@@ -7,12 +7,12 @@ import { getAuth } from "firebase/auth"; // Import getAuth
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAhN0j0WUqOLH6A20NdqIGnOq4hZRXxF4k",
-  authDomain: "copy-paste-2730f.firebaseapp.com",
-  projectId: "copy-paste-2730f",
-  storageBucket: "copy-paste-2730f.firebasestorage.app",
-  messagingSenderId: "245512721916",
-  appId: "1:245512721916:web:8e2850f86bd1669f274e79"
+  apiKey: "AIzaSyBjg-XpkbJv5-vjCDMpQS2LvS3OTqgcY_g",
+  authDomain: "lab-assistant-396ce.firebaseapp.com",
+  projectId: "lab-assistant-396ce",
+  storageBucket: "lab-assistant-396ce.firebasestorage.app",
+  messagingSenderId: "1087748960728",
+  appId: "1:1087748960728:web:eebb8e1fbb2c828991c2ad"
 };
 
 // Initialize Firebase

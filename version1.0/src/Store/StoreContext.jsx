@@ -95,7 +95,7 @@ const StoreContext = ({ children }) => {
   useEffect(() => {
     const getItems = async () => {
       try {
-        const itemsCollectionRef = collection(db, "ItemStore");
+        const itemsCollectionRef = collection(db, "programs");
         const itemsSnapshot = await getDocs(itemsCollectionRef);
         const itemsList = itemsSnapshot.docs.map((doc) => {
           return {
@@ -114,7 +114,7 @@ const StoreContext = ({ children }) => {
 
   const addStoreItem = async (categoryId, itemTitle, itemProgram, itemDesc) => {
     try {
-      const itemsCollectionRef = collection(db, "ItemStore");
+      const itemsCollectionRef = collection(db, "programs");
       await addDoc(itemsCollectionRef, {
         typeId: categoryId,
         title: itemTitle,
@@ -140,7 +140,7 @@ const StoreContext = ({ children }) => {
 
   const deleteStoreItem = async (programId) => {
     try {
-      await deleteDoc(doc(db, "ItemStore", programId));
+      await deleteDoc(doc(db, "programs", programId));
 
       dispatch({ type: "DELETE", payload: { id: programId } });
     } catch (error) {
@@ -156,7 +156,7 @@ const StoreContext = ({ children }) => {
       updatedItem
     );
     try {
-      const itemRef = doc(db, "ItemStore", updatedItem.id);
+      const itemRef = doc(db, "programs", updatedItem.id);
       const updatedData = {
         typeId: updatedItem.typeId,
         title: updatedItem.title,
