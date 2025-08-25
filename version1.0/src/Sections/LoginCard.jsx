@@ -9,7 +9,7 @@ const LoginCard = () => {
 
   // **Simplified "authentication" - replace with real logic later**
   const handleLogin = () => {
-    if (username === 'Prabhu' && password === 'CallMeDad') {
+    if (username === 'Prabhu' && password === '543') {
       setLogin(true);
       setPopupContent(null)
     } else {
