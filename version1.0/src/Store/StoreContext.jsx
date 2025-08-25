@@ -1,7 +1,7 @@
 import React, { createContext, useState, useReducer, useEffect } from "react";
 
-import { db, auth } from "../config/firebase"; // Import auth
-import { onAuthStateChanged } from "firebase/auth"; // Import onAuthStateChanged
+import { db, auth } from "../config/firebase"; 
+import { onAuthStateChanged } from "firebase/auth"; 
 import {
   addDoc,
   collection,
@@ -28,12 +28,45 @@ export const ProgramContext = createContext({
   setAddCategoryId: () => {},
 });
 
-const initialStoreItems = []; // Initialize as an empty array
+// ✅ Default static programs
+const defaultPrograms = [
+  {
+    id: "mc-1",
+    typeId: 1,
+    title: "LED Blink",
+    desc: "Basic microcontroller program to blink LED",
+    program: `void setup(){ pinMode(13, OUTPUT); } 
+void loop(){ digitalWrite(13,HIGH); delay(1000); digitalWrite(13,LOW); delay(1000);} `,
+    lastUpdated: new Date().toISOString(),
+  },
+  {
+    id: "latex-1",
+    typeId: 2,
+    title: "Basic LaTeX Document",
+    desc: "Minimal LaTeX structure",
+    program: `\\documentclass{article}
+\\begin{document}
+Hello, Lab Management!
+\\end{document}`,
+    lastUpdated: new Date().toISOString(),
+  },
+  {
+    id: "ada-1",
+    typeId: 3,
+    title: "Binary Search",
+    desc: "Algorithm Design using ADA",
+    program: `procedure Binary_Search is
+   type Int_Array is array (1..10) of Integer;
+   -- Implementation here
+end Binary_Search;`,
+    lastUpdated: new Date().toISOString(),
+  },
+];
 
 const storeReducer = (storeItem, action) => {
   let newStoreItems = storeItem;
   if (action.type === "INITIAL_LOAD") {
-    return action.payload; // Replace the entire store with the fetched items
+    return action.payload; 
   } else if (action.type === "ADD") {
     newStoreItems = [
       ...storeItem,
@@ -70,7 +103,7 @@ const StoreContext = ({ children }) => {
   const [selectedId, setSelectedId] = useState(null);
   const [addCategoryId, setAddCategoryId] = useState(null);
 
-  const [storeItems, dispatch] = useReducer(storeReducer, initialStoreItems);
+  const [storeItems, dispatch] = useReducer(storeReducer, []);
 
   const categories = [
     { id: 1, name: "MC", description: "Microcontroller Lab Programs" },
@@ -78,39 +111,39 @@ const StoreContext = ({ children }) => {
     { id: 3, name: "Ada", description: "Algorithm Design & Analysis Programs" },
   ];
 
-  // 🔁 Load login state from localStorage on mount
+  // 🔁 Load login state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setLogin(true);
-        // Optionally handle user information
-      } else {
-        setLogin(false);
-      }
+      setLogin(!!user);
     });
-
     return () => unsubscribe();
   }, []);
 
+  // 🔁 Load programs (Firebase or defaults)
   useEffect(() => {
     const getItems = async () => {
       try {
         const itemsCollectionRef = collection(db, "programs");
         const itemsSnapshot = await getDocs(itemsCollectionRef);
-        const itemsList = itemsSnapshot.docs.map((doc) => {
-          return {
-            id: doc.id, // Get the document ID
-            ...doc.data(),
-          }; // Get the rest of the data}
-        });
-        dispatch({ type: "INITIAL_LOAD", payload: itemsList }); // Dispatch an action to load initial data
+        const itemsList = itemsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        if (itemsList.length > 0) {
+          dispatch({ type: "INITIAL_LOAD", payload: itemsList });
+        } else {
+          // ✅ Use default static programs if DB is empty
+          dispatch({ type: "INITIAL_LOAD", payload: defaultPrograms });
+        }
       } catch (error) {
-        console.log(error, "Error fetching items");
+        console.log(error, "Error fetching items, loading defaults instead");
+        dispatch({ type: "INITIAL_LOAD", payload: defaultPrograms });
       }
     };
 
     getItems();
-  }, []); // Empty dependency array means this runs only once on mount
+  }, []);
 
   const addStoreItem = async (categoryId, itemTitle, itemProgram, itemDesc) => {
     try {
@@ -120,7 +153,7 @@ const StoreContext = ({ children }) => {
         title: itemTitle,
         program: itemProgram,
         desc: itemDesc,
-        lastUpdated: new Date().toISOString(), // Set the last updated time to now
+        lastUpdated: new Date().toISOString(),
       });
       dispatch({
         type: "ADD",
@@ -129,8 +162,8 @@ const StoreContext = ({ children }) => {
           title: itemTitle,
           program: itemProgram,
           desc: itemDesc,
-          id: Math.random().toString(), // Generate a random ID for the new item
-          lastUpdated: new Date().toISOString(), // Set the last updated time to now
+          id: Math.random().toString(),
+          lastUpdated: new Date().toISOString(),
         },
       });
     } catch (error) {
@@ -141,7 +174,6 @@ const StoreContext = ({ children }) => {
   const deleteStoreItem = async (programId) => {
     try {
       await deleteDoc(doc(db, "programs", programId));
-
       dispatch({ type: "DELETE", payload: { id: programId } });
     } catch (error) {
       console.log(error, "Error deleting item");
@@ -149,12 +181,6 @@ const StoreContext = ({ children }) => {
   };
 
   const updateStoreItem = async (updatedItem) => {
-    console.log(
-      "Attempting to update item with ID:",
-      updatedItem.id,
-      "Data:",
-      updatedItem
-    );
     try {
       const itemRef = doc(db, "programs", updatedItem.id);
       const updatedData = {
@@ -164,16 +190,10 @@ const StoreContext = ({ children }) => {
         desc: updatedItem.desc,
         lastUpdated: new Date().toISOString(),
       };
-      console.log("Updating Firebase with:", updatedData);
       await updateDoc(itemRef, updatedData);
-      console.log("Firebase update successful");
       dispatch({
         type: "UPDATE",
         payload: { ...updatedItem, lastUpdated: updatedData.lastUpdated },
-      });
-      console.log("Dispatched UPDATE action:", {
-        ...updatedItem,
-        lastUpdated: updatedData.lastUpdated,
       });
     } catch (error) {
       console.log("Error updating item:", error);
